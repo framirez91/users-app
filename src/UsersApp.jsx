@@ -1,27 +1,22 @@
-import { useReducer } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useAuth } from './auth/hooks/useAuth';
 import { LoginPage } from './auth/pages/LoginPage';
-import { Navbar } from './components/layout/Navbar';
-import { UsersPage } from './pages/UsersPage';
 import { UserRoutes } from './routes/UserRoutes';
+import { useContext } from 'react';
+import { AuthContext } from './auth/context/AuthContext';
 
 export const UsersApp = () => {
+    const {login} = useContext(AuthContext);
 
-    const { login, handlerLogin, handlerLogout } = useAuth();
     return (
         <Routes>
             {
                 login.isAuth
                     ? (
-                        <Route path='/*' element={<UserRoutes
-                            login={login}
-                            handlerLogout={handlerLogout} />} />
+                        <Route path='/*' element={<UserRoutes />} />
                     )
                     : <>
                         <Route path='/login'
-                            element={<LoginPage
-                                handlerLogin={handlerLogin} />} />
+                            element={<LoginPage/>} />
                         <Route path='/*' element={<Navigate to="/login" /> }  />
                     </>
                     

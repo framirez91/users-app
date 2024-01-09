@@ -6,9 +6,9 @@ import { usersReducer } from "../reducers/usersReducer";
 const initialUsers = [
     {
         id: 1,
-        username: 'pepe',
+        username: 'pedrito',
         password: '12345',
-        email: 'pepe@correo.com'
+        email: 'me@electrucutaste.com'
     },
 ];
 
