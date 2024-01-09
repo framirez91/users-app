@@ -1,69 +1,90 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import Swal from "sweetalert2";
 
-export const UserForm = ({ handlerAddUser, initialUserForm, userSelected,handlerCloseForm }) => {
-  const [userForm, setUserForm] = useState(initialUserForm);
-  const { id, username, email, password } = userForm;
+export const UserForm = ({ userSelected, handlerAddUser, initialUserForm, handlerCloseForm }) => {
 
-  useEffect(() => {
-    setUserForm({ ...userSelected, password: "" });
-  }, [userSelected]);
+    const [userForm, setUserForm] = useState(initialUserForm);
 
-  const onInputChange = ({ target }) => {
-    const { name, value } = target;
-    setUserForm({ ...userForm, [name]: value });
-  };
+    const { id, username, password, email } = userForm;
 
-  const onSubmit = (event) => {
-    event.preventDefault();
-    if (!username || !email || (!password && id === 0)) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Todos los campos son obligatorios!",
-      });
-      return;
+    useEffect(() => {
+        setUserForm({
+            ...userSelected,
+            password: '',
+        });
+    }, [userSelected]);
+
+    const onInputChange = ({ target }) => {
+        // console.log(target.value)
+        const { name, value } = target;
+        setUserForm({
+            ...userForm,
+            [name]: value,
+        })
     }
 
-    handlerAddUser(userForm); //le pasamos el userform al componente padre
-    setUserForm(initialUserForm);
-  };
-  //guardar el user form en el listado de usuarios
+    const onSubmit = (event) => {
+        event.preventDefault();
+        if (!username || (!password && id === 0) || !email) {
+            Swal.fire(
+                'Error de validacion',
+                'Debe completar los campos del formulario!',
+                'error'
+            );
 
-  return (
-    <form onSubmit={onSubmit}>
-      <input
-        className="form-control my-3 w-75"
-        placeholder="username"
-        name="username"
-        value={username}
-        onChange={onInputChange}
-      />
-      <input
-        className="form-control my-3 w-75"
-        placeholder="email"
-        name="email"
-        value={email}
-        onChange={onInputChange}
-      />
-      {id === 0 && (
-        <input
-          className="form-control my-3 w-75"
-          placeholder="password"
-          name="password"
-          value={password}
-          onChange={onInputChange}
-        />
-      )}
+            return;
+        }
+        // console.log(userForm);
 
-      <input type="hidden" name="id" value={id} />
-      
+        // guardar el user form en el listado de usuarios
+        handlerAddUser(userForm);
+        setUserForm(initialUserForm);
+    }
 
-      <button type="submit" className="btn btn-primary">
-        {id === 0 ? "Add" : "Update"}
-      </button>
-      <button type="button" className="btn btn-primary mx-2" onClick={handlerCloseForm}>Cerrar formulario</button>
-    </form>
-    
-  );
-};
+    const onCloseForm = () => {
+        handlerCloseForm();
+        setUserForm(initialUserForm);
+    }
+    return (
+        <form onSubmit={ onSubmit }>
+            <input
+                className="form-control my-3 w-75"
+                placeholder="Username"
+                name="username"
+                value={ username}
+                onChange={onInputChange} />
+            
+            { id > 0 || <input
+                className="form-control my-3 w-75"
+                placeholder="Password"
+                type="password"
+                name="password"
+                value={password}
+                onChange={onInputChange} /> }
+            
+            <input
+                className="form-control my-3 w-75"
+                placeholder="Email"
+                name="email"
+                value={email}
+                onChange={onInputChange} />
+            <input type="hidden"
+                name="id"
+                value={id} />
+            
+            <button
+                className="btn btn-primary"
+                type="submit">
+                {id > 0 ? 'Editar' : 'Crear'}
+            </button>
+
+            {!handlerCloseForm || <button
+                className="btn btn-primary mx-2"
+                type="button"
+                onClick={() => onCloseForm()}>
+                Cerrar
+            </button>}
+            
+        </form>
+    )
+}
