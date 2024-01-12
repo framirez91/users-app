@@ -1,12 +1,12 @@
+import { useContext } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { AuthContext } from './auth/context/AuthContext';
 import { LoginPage } from './auth/pages/LoginPage';
 import { UserRoutes } from './routes/UserRoutes';
-import { useContext } from 'react';
-import { AuthContext } from './auth/context/AuthContext';
 
 export const UsersApp = () => {
-    const {login} = useContext(AuthContext);
 
+    const { login } = useContext(AuthContext);
     return (
         <Routes>
             {
@@ -15,9 +15,8 @@ export const UsersApp = () => {
                         <Route path='/*' element={<UserRoutes />} />
                     )
                     : <>
-                        <Route path='/login'
-                            element={<LoginPage/>} />
-                        <Route path='/*' element={<Navigate to="/login" /> }  />
+                        <Route path='/login' element={<LoginPage />} />
+                        <Route path='/*' element={<Navigate to="/login" /> } />
                     </>
                     
             }

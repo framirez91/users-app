@@ -6,11 +6,10 @@ import { RegisterPage } from "../pages/RegisterPage"
 import { UsersPage } from "../pages/UsersPage"
 
 export const UserRoutes = () => {
-
     return (
         <>
             <UserProvider>
-                <Navbar  />
+                <Navbar />
                 <Routes>
                     <Route path="users" element={<UsersPage />} />
                     <Route path="users/register" element={<RegisterPage />} />

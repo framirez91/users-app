@@ -4,7 +4,7 @@ import { UserContext } from "../context/UserContext";
 
 export const UserForm = ({ userSelected, handlerCloseForm }) => {
 
-    const { initialUserForm, handlerAddUser } = useContext(UserContext);
+    const { initialUserForm, handlerAddUser, errors } = useContext(UserContext);
     
     const [userForm, setUserForm] = useState(initialUserForm);
 
@@ -28,28 +28,27 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        if (!username || (!password && id === 0) || !email) {
-            Swal.fire(
-                'Error de validacion',
-                'Debe completar los campos del formulario!',
-                'error'
-            );
+        // if (!username || (!password && id === 0) || !email) {
+        //     Swal.fire(
+        //         'Error de validacion',
+        //         'Debe completar los campos del formulario!',
+        //         'error'
+        //     );
 
-            return;
-        }
-        if (!email.includes('@')) {
-            Swal.fire(
-                'Error de validacion email',
-                'El email debe ser valido, incluir un @!',
-                'error'
-            );
-            return;
-        }
+        //     return;
+        // }
+        // if (!email.includes('@')) {
+        //     Swal.fire(
+        //         'Error de validacion email',
+        //         'El email debe ser valido, incluir un @!',
+        //         'error'
+        //     );
+        //     return;
+        // }
         // console.log(userForm);
 
         // guardar el user form en el listado de usuarios
         handlerAddUser(userForm);
-        setUserForm(initialUserForm);
     }
 
     const onCloseForm = () => {
@@ -64,6 +63,7 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
                 name="username"
                 value={ username}
                 onChange={onInputChange} />
+            <p className="text-danger">{ errors?.username}</p>
             
             { id > 0 || <input
                 className="form-control my-3 w-75"
@@ -71,7 +71,8 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
                 type="password"
                 name="password"
                 value={password}
-                onChange={onInputChange} /> }
+                onChange={onInputChange} />}
+            <p className="text-danger">{errors?.password}</p>
             
             <input
                 className="form-control my-3 w-75"
@@ -79,6 +80,8 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
                 name="email"
                 value={email}
                 onChange={onInputChange} />
+            <p className="text-danger">{errors?.email}</p>
+
             <input type="hidden"
                 name="id"
                 value={id} />
