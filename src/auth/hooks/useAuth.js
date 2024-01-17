@@ -6,6 +6,7 @@ import { loginUser } from "../services/authService";
 
 const initialLogin = JSON.parse(sessionStorage.getItem('login')) || {
     isAuth: false,
+    isAdmin: false,
     user: undefined,
 }
 export const useAuth = () => {
@@ -13,22 +14,34 @@ export const useAuth = () => {
     const [login, dispatch] = useReducer(loginReducer, initialLogin);
     const navigate = useNavigate();
 
-    const handlerLogin = ({ username, password }) => {
-        const isLogin = loginUser({ username, password });
+    const handlerLogin = async({ username, password }) => {
         
-        if (isLogin) {
-            const user = { username: 'admin' }
+        try {
+            const response =  await loginUser({ username, password });
+            const token = response.data.token;
+            const claims = JSON.parse(window.atob(token.split('.')[1]));
+            const user = { username: claims.sub }
             dispatch({
                 type: 'login',
-                payload: user,
+                payload: {user,isAdmin: claims.isAdmin},
             });
             sessionStorage.setItem('login', JSON.stringify({
                 isAuth: true,
+                isAdmin: claims.isAdmin,
                 user,
             }));
+            sessionStorage.setItem('token', `Bearer ${token}`);
             navigate('/users');
-        } else {
-            Swal.fire('Error Login', 'Username o password invalidos', 'error');
+        } catch(error) {
+            if(error.response?.status === 401){
+                Swal.fire('Error Login', 'Username o password invalidos', 'error');
+            }else if(error.response?.status === 403) {
+                Swal.fire('Error Login', 'No tiene permisos a este recurso', 'error');
+
+            }
+            else{
+                throw error;
+            }
         }
     }
 
@@ -37,6 +50,9 @@ export const useAuth = () => {
             type: 'logout',
         });
         sessionStorage.removeItem('login');
+        sessionStorage.removeItem('token');
+        sessionStorage.clear();
+        navigate('/login');
     }
     return {
         login,

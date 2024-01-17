@@ -2,6 +2,16 @@ import axios from "axios"
 
 const BASE_URL = 'http://localhost:8080/users';
 
+const config = () =>{
+    return {
+        headers: {
+            "Authorization":sessionStorage.getItem('token'), //sessionStorage.getItem('token') || "
+            'Content-Type': 'application/json',
+        },
+    };
+}
+
+
 export const findAll = async() => {
     try {
         const response = await axios.get(BASE_URL);
@@ -18,7 +28,7 @@ export const save = async ({ username, email, password }) => {
             username,
             email,
             password,
-        });
+        },config());
     } catch (error) {
         throw error;
     }
@@ -30,7 +40,7 @@ export const update = async({ id, username, email }) => {
             username,
             email,
             // password: 'nothing',
-        });
+        },config());
     } catch (error) {
         throw error;
     }
@@ -38,8 +48,9 @@ export const update = async({ id, username, email }) => {
 
 export const remove = async (id) => {
     try {
-        await axios.delete(`${BASE_URL}/${id}`);
+        await axios.delete(`${BASE_URL}/${id}`,config());
     } catch (error) {
-        console.error(error);
+       
+        throw error;
     }
 }
