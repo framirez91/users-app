@@ -7,8 +7,9 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
     const { initialUserForm, handlerAddUser, errors } = useContext(UserContext);
     
     const [userForm, setUserForm] = useState(initialUserForm);
+    const [checked, setChecked] = useState(userForm.admin );
 
-    const { id, username, password, email } = userForm;
+    const { id, username, password, email,admin } = userForm;
 
     useEffect(() => {
         setUserForm({
@@ -17,37 +18,25 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
         });
     }, [userSelected]);
 
-    const onInputChange = ({ target }) => {
-        // console.log(target.value)
-        const { name, value } = target;
+    const onInputChange = () => {
+        setChecked(!checked);
         setUserForm({
             ...userForm,
-            [name]: value,
+            admin: checked,
+        })
+    }
+    const onCheckboxChange = ({ target }) => {
+        // console.log(target.value)
+        const { name, checked } = target;
+        setUserForm({
+            ...userForm,
+            [name]: checked,
         })
     }
 
     const onSubmit = (event) => {
         event.preventDefault();
-        // if (!username || (!password && id === 0) || !email) {
-        //     Swal.fire(
-        //         'Error de validacion',
-        //         'Debe completar los campos del formulario!',
-        //         'error'
-        //     );
-
-        //     return;
-        // }
-        // if (!email.includes('@')) {
-        //     Swal.fire(
-        //         'Error de validacion email',
-        //         'El email debe ser valido, incluir un @!',
-        //         'error'
-        //     );
-        //     return;
-        // }
-        // console.log(userForm);
-
-        // guardar el user form en el listado de usuarios
+    
         handlerAddUser(userForm);
     }
 
@@ -81,6 +70,16 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
                 value={email}
                 onChange={onInputChange} />
             <p className="text-danger">{errors?.email}</p>
+            <div className="my-3 form-check">
+                <input type="checkbox"
+                name = "admin"
+                checked={admin}
+                onChange={onCheckboxChange}
+                className="form-check-input"
+                />
+                <label className="form-check-label">Admin</label>
+
+            </div>
 
             <input type="hidden"
                 name="id"

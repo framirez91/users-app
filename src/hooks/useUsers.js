@@ -13,6 +13,7 @@ const initialUserForm = {
     username: '',
     password: '',
     email: '',
+    admin: false,
 }
 
 const initialErrors = {
@@ -32,12 +33,22 @@ export const useUsers = () => {
     const navigate = useNavigate();
 
     const getUsers = async () => {
+       try {
         const result = await findAll();
-        console.log(result);
         dispatch({
             type: 'loadingUsers',
             payload: result.data,
         });
+
+       }
+       catch (error) {
+        if(error.response?.status==401){
+            handlerLogout();
+
+        } else {
+            throw error;
+        }
+       }
     }
 
     const handlerAddUser = async (user) => {

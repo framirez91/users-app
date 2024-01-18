@@ -5,7 +5,7 @@ import { AuthContext } from "../../auth/context/AuthContext";
 export const Navbar = () => {
   const { login, handlerLogout } = useContext(AuthContext);
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+    <nav className="navbar navbar-dark navbar-expand-lg bg-dark">
       <div className="container-fluid">
         <a className="navbar-brand" href="#">
           UsersApp
@@ -44,10 +44,10 @@ export const Navbar = () => {
           id="navbarNavLogout"
         >
           <span className="nav-item nav-link text-primary mx-3">
-            {login.user?.username}
+            {login.user?.username}  <i class="bi bi-person-circle"></i>
           </span>
-          <button onClick={handlerLogout} className="btn btn-outline-success">
-            Logout
+          <button onClick={handlerLogout} className="btn btn-outline-danger">
+          Logout <i class="bi bi-x-circle-fill"></i> 
           </button>
         </div>
       </div>
