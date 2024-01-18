@@ -1,62 +1,60 @@
-import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { loginReducer } from "../reducers/loginReducer";
 import { loginUser } from "../services/authService";
+import { useDispatch, useSelector } from "react-redux";
+import { onLogin, onLogout } from "../../store/slices/auth/authSlice";
 
-const initialLogin = JSON.parse(sessionStorage.getItem('login')) || {
-    isAuth: false,
-    isAdmin: false,
-    user: undefined,
-}
 export const useAuth = () => {
+  const dispatch = useDispatch();
+  const { user, isAdmin, isAuth } = useSelector((state) => state.auth);
 
-    const [login, dispatch] = useReducer(loginReducer, initialLogin);
-    const navigate = useNavigate();
+  // const [login, dispatch] = useReducer(loginReducer, initialLogin);
+  const navigate = useNavigate();
 
-    const handlerLogin = async({ username, password }) => {
-        
-        try {
-            const response =  await loginUser({ username, password });
-            const token = response.data.token;
-            const claims = JSON.parse(window.atob(token.split('.')[1]));
-            const user = { username: claims.sub }
-            dispatch({
-                type: 'login',
-                payload: {user,isAdmin: claims.isAdmin},
-            });
-            sessionStorage.setItem('login', JSON.stringify({
-                isAuth: true,
-                isAdmin: claims.isAdmin,
-                user,
-            }));
-            sessionStorage.setItem('token', `Bearer ${token}`);
-            navigate('/users');
-        } catch(error) {
-            if(error.response?.status === 401){
-                Swal.fire('Error Login', 'Username o password invalidos', 'error');
-            }else if(error.response?.status === 403) {
-                Swal.fire('Error Login', 'No tiene permisos a este recurso', 'error');
+  const handlerLogin = async ({ username, password }) => {
+    try {
+      const response = await loginUser({ username, password });
+      const token = response.data.token;
+      const claims = JSON.parse(window.atob(token.split(".")[1]));
+      const user = { username: claims.sub };
+      dispatch(onLogin({ user, isAdmin: claims.isAdmin }));
 
-            }
-            else{
-                throw error;
-            }
-        }
+      sessionStorage.setItem(
+        "login",
+        JSON.stringify({
+          isAuth: true,
+          isAdmin: claims.isAdmin,
+          user,
+        })
+      );
+      sessionStorage.setItem("token", `Bearer ${token}`);
+      navigate("/users");
+    } catch (error) {
+      if (error.response?.status === 401) {
+        Swal.fire("Error Login", "Username o password invalidos", "error");
+      } else if (error.response?.status === 403) {
+        Swal.fire("Error Login", "No tiene permisos a este recurso", "error");
+      } else {
+        throw error;
+      }
     }
+  };
 
-    const handlerLogout = () => {
-        dispatch({
-            type: 'logout',
-        });
-        sessionStorage.removeItem('login');
-        sessionStorage.removeItem('token');
-        sessionStorage.clear();
-        navigate('/login');
-    }
-    return {
-        login,
-        handlerLogin,
-        handlerLogout,
-    }
-}
+  const handlerLogout = () => {
+    dispatch(onLogout());
+    sessionStorage.removeItem("login");
+    sessionStorage.removeItem("token");
+    sessionStorage.clear();
+    navigate("/login");
+  };
+  return {
+    login:{
+        user,
+        isAdmin,
+        isAuth,
+
+    },
+    handlerLogin,
+    handlerLogout,
+  };
+};
